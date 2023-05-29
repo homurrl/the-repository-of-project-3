@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useMutation } from '@apollo/client';
+import { ADD_USER_SEARCH_TERMS } from '../utils/mutations';
+import jwt_decode from 'jwt-decode';
+import Auth from '../utils/auth';
+
 
 const Home = () => {
   const [animal, setAnimal] = useState(null);
@@ -7,13 +12,16 @@ const Home = () => {
   const [currentAnimals, setCurrentAnimals] = useState([]);
   const [error, setError] = useState(null);
   const [pageNumber, setPageNumer] = useState(1);
+// If token is stored in local storage
+const token = Auth.getToken();
+
 
   useEffect(() => {
     if (animalFacts.length > 0) {
       setCurrentAnimals([animalFacts[pageNumber - 1]])
     }
   }, [pageNumber, animalFacts])
-
+  const [addUserSearchTerm] = useMutation(ADD_USER_SEARCH_TERMS);
   const back = () => {
     if (pageNumber > 1) {
       setPageNumer(pageNumber - 1)
@@ -35,6 +43,13 @@ const Home = () => {
   const getFacts = async (event) => {
     event.preventDefault();
     if (animal) {
+      if(token) {
+
+        const decoded = jwt_decode(token);
+        const userId = decoded.id;  // The payload structure may vary, it could also be decoded.userId or another field
+        addUserSearchTerm({variables:{userId:userId,searchTerm: animal}});
+      }
+      
       const response = await axios({
         method: 'get',
         url: 'https://api.api-ninjas.com/v1/animals?name=' + animal,
@@ -84,7 +99,7 @@ const Home = () => {
 
               <p>Characteristics:</p>
               <ul>
-                <li>Main_prey: {species.characteristics.main_prey}</li>
+                <li>Main prey: {species.characteristics.main_prey}</li>
                 <li>Distinctive feature: {species.characteristics.distinctive_feature}</li>
                 <li>Wingspan: {species.characteristics.wingspan}</li>
                 <li>Habitat: {species.characteristics.habitat}</li>

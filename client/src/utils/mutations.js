@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 
 export const LOGIN_USER = gql`
   mutation login($email: String!, $password: String!) {
@@ -23,3 +23,11 @@ export const ADD_USER = gql`
     }
   }
 `;
+
+export const ADD_USER_SEARCH_TERMS = gql`
+mutation addUsersearchTerm ($userId: ID, $searchTerm: String!) {
+  addUsersearchTerm(userId:$userId,searchTerm:$searchTerm){
+    id
+  }
+}
+`

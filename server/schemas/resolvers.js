@@ -24,6 +24,12 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
+    addUsersearchTerm: async (parent, {userId, searchTerm}) => {
+      const user = await User.findbyId(userId);
+      user.searchTerms.push(searchTerm); 
+      await user.save();
+      return user;
+    },
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
 

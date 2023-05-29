@@ -25,3 +25,9 @@ The frontend has been updated to use the `react-bootstrap` library, however if y
 - Create the new page in `client/src/pages/<page name>.js` also create any sub components if needed in `client/src/components/<component name>/index.js`
 - Add the new queries and mutations to the `client/src/utils/mutations.js` or `queries.js` (these should be confirmed working in the graphql playground first);
 - Add the query/mutations using the `useQuery` or `useMutation` hooks from apollo.
+
+TO DO
+
+Add animal facts api using axios
+store user credentials into the database 
+search function included in the user log in section 

@@ -21,6 +21,23 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
 }
 
+app.get('/getFact', (req, res) => {
+  const apiKey = 'aInKWxB6C9ppm5/rm126Ew==V2Ziy66hV5hb82LJ'
+  var name = 'cheetah'
+  $.ajax({
+      method: 'GET',
+      url: 'https://api.api-ninjas.com/v1/animals?name=' + name,
+      headers: { 'X-Api-Key': apiKey},
+      contentType: 'application/json',
+      success: function(result) {
+          console.log(result);
+      },
+      error: function ajaxError(jqXHR) {
+          console.error('Error: ', jqXHR.responseText);
+      }
+  });
+})
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });

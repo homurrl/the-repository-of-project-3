@@ -19,6 +19,7 @@ const userSchema = new Schema({
     required: true,
     minlength: 5,
   },
+  searchTerms: [String],
 });
 
 userSchema.pre('save', async function (next) {
@@ -28,6 +29,9 @@ userSchema.pre('save', async function (next) {
   }
 
   next();
+
+  
+
 });
 
 userSchema.methods.isCorrectPassword = async function (password) {
