@@ -44,10 +44,19 @@ const token = Auth.getToken();
     event.preventDefault();
     if (animal) {
       if(token) {
-
+        console.log("token" + token);
         const decoded = jwt_decode(token);
-        const userId = decoded.id;  // The payload structure may vary, it could also be decoded.userId or another field
-        addUserSearchTerm({variables:{userId:userId,searchTerm: animal}});
+        console.log('decoded:', JSON.stringify(decoded));
+        const userId = decoded.data._id;  // The payload structure may vary, it could also be decoded.userId or another field
+        console.log('userId:', userId);
+        try {
+          const { data } = await  addUserSearchTerm({variables:{userId:userId,searchTerm: animal}});
+    
+          console.log(data)
+        } catch (e) {
+          console.error(e);
+        }
+      
       }
       
       const response = await axios({

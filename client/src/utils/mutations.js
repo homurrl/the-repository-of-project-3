@@ -27,7 +27,9 @@ export const ADD_USER = gql`
 export const ADD_USER_SEARCH_TERMS = gql`
 mutation addUsersearchTerm ($userId: ID, $searchTerm: String!) {
   addUsersearchTerm(userId:$userId,searchTerm:$searchTerm){
-    id
+    _id
+    username
+    searchTerms
   }
 }
 `

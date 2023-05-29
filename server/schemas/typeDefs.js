@@ -6,7 +6,7 @@ const typeDefs = gql`
     username: String
     email: String
     password: String
-    searchTerms:[String] 
+    searchTerms:[String!] 
   }
 
   type Auth {
@@ -26,9 +26,6 @@ const typeDefs = gql`
     addUsersearchTerm(userId:ID,searchTerm: String!): User
   }
 
-  type Animals {
-
-  }
 
 `;
 

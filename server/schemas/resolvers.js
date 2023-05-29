@@ -25,7 +25,12 @@ const resolvers = {
       return { token, user };
     },
     addUsersearchTerm: async (parent, {userId, searchTerm}) => {
-      const user = await User.findbyId(userId);
+      const user = await User.findById(userId);
+    
+      // Check if user exists before trying to access searchTerms
+      if (!user) {
+        throw new Error(`User with id ${userId} does not exist`);
+      }
       user.searchTerms.push(searchTerm); 
       await user.save();
       return user;
