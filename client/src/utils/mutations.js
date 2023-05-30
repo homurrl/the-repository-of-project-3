@@ -33,3 +33,13 @@ mutation addUsersearchTerm ($userId: ID, $searchTerm: String!) {
   }
 }
 `
+
+export const GET_USER_SEARCH_TERMS = gql`
+mutation getUsersearchTerm ($userId: ID) {
+  getUsersearchTerm(userId:$userId){
+    _id
+    username
+    searchTerms
+  }
+}
+`

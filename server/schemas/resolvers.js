@@ -35,6 +35,15 @@ const resolvers = {
       await user.save();
       return user;
     },
+    getUsersearchTerm: async (parent, {userId}) => {
+      const user = await User.findById(userId);
+    
+      // Check if user exists before trying to access searchTerms
+      if (!user) {
+        throw new Error(`User with id ${userId} does not exist`);
+      }
+      return user;
+    },
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
 

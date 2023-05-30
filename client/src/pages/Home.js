@@ -1,27 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useMutation } from '@apollo/client';
-import { ADD_USER_SEARCH_TERMS } from '../utils/mutations';
+import { ADD_USER_SEARCH_TERMS, GET_USER_SEARCH_TERMS } from '../utils/mutations';
 import jwt_decode from 'jwt-decode';
 import Auth from '../utils/auth';
 
 
 const Home = () => {
+  // If token is stored in local storage
+  const token = Auth.getToken();
+
+  const userId = token ? jwt_decode(token).data._id : null;
+
   const [animal, setAnimal] = useState(null);
   const [animalFacts, setAnimalFacts] = useState([]);
   const [currentAnimals, setCurrentAnimals] = useState([]);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [pageNumber, setPageNumer] = useState(1);
-// If token is stored in local storage
-const token = Auth.getToken();
-
+  const [searchTerms, setSearchTerms] = useState([]);
 
   useEffect(() => {
     if (animalFacts.length > 0) {
       setCurrentAnimals([animalFacts[pageNumber - 1]])
     }
   }, [pageNumber, animalFacts])
+
   const [addUserSearchTerm] = useMutation(ADD_USER_SEARCH_TERMS);
+
+  const [getUserSearchTerm] = useMutation(GET_USER_SEARCH_TERMS);
+
+  const getSearchTerms = async (id) => {
+    const { data } = await getUserSearchTerm({ variables: { userId: id } });
+    console.log(data);
+  }
+
+  //getSearchTerms(userId);
+
   const back = () => {
     if (pageNumber > 1) {
       setPageNumer(pageNumber - 1)
@@ -40,47 +54,61 @@ const token = Auth.getToken();
     setAnimal(value);
   };
 
-  const getFacts = async (event) => {
+  const onGetFactsClicked = async (event) => {
     event.preventDefault();
     if (animal) {
-      if(token) {
-        console.log("token" + token);
+      if (token) {
+        // console.log("token" + token);
         const decoded = jwt_decode(token);
-        console.log('decoded:', JSON.stringify(decoded));
+        // console.log('decoded:', JSON.stringify(decoded));
         const userId = decoded.data._id;  // The payload structure may vary, it could also be decoded.userId or another field
-        console.log('userId:', userId);
+        // console.log('userId:', userId);
         try {
-          const { data } = await  addUserSearchTerm({variables:{userId:userId,searchTerm: animal}});
-    
-          console.log(data)
+          const { data } = await addUserSearchTerm({ variables: { userId: userId, searchTerm: animal } });
+          console.log(data);
+          if (data?.addUsersearchTerm?.searchTerms) setSearchTerms(data?.addUsersearchTerm?.searchTerms);
         } catch (e) {
           console.error(e);
         }
-      
+
       }
-      
+
+      getFactsCall(animal)
+
+    }
+  }
+
+  const onSearchTermClicked = (data) => {
+    setAnimal(data);
+    getFactsCall(data);
+  }
+
+  const getFactsCall = async (animo) => {
+    if (animo) {
       const response = await axios({
         method: 'get',
-        url: 'https://api.api-ninjas.com/v1/animals?name=' + animal,
+        url: 'https://api.api-ninjas.com/v1/animals?name=' + animo,
         headers: { 'X-Api-Key': 'aInKWxB6C9ppm5/rm126Ew==V2Ziy66hV5hb82LJ' },
       })
 
       const data = response.data;
 
       setAnimalFacts(data);
-
-      console.log(data);
-
     }
   }
 
-
   return (
     <main>
+      <section className='mt-5'>
+        <h3>Search History</h3>
+        <ul className='row'>
+          {searchTerms.map((da) => da.toLowerCase()).filter((d, i) => searchTerms.indexOf(d) === i).map((data, index) => (<li style={{ cursor: "pointer"}} className='col-3' key={index} onClick={() => onSearchTermClicked(data)}>{data}</li>))}
+        </ul>
+      </section>
       <section className="mt-5">
         <form className="d-flex">
-          <input className="form-control me-2" type="search" placeholder="Enter an animal name..." aria-label="Search" onChange={handleChange} />
-          <button className="btn btn-outline-success" onClick={getFacts}>Get Facts</button>
+          <input className="form-control me-2" type="search" value={animal} placeholder="Enter an animal name..." aria-label="Search" onChange={handleChange} />
+          <button className="btn btn-outline-success" onClick={onGetFactsClicked}>Get Facts</button>
         </form>
       </section>
       <section className='my-5'>

@@ -24,6 +24,7 @@ const typeDefs = gql`
     addUser(username: String!, email: String!, password: String!): Auth
     login(email: String!, password: String!): Auth
     addUsersearchTerm(userId:ID,searchTerm: String!): User
+    getUsersearchTerm(userId:ID): User
   }
 
 
